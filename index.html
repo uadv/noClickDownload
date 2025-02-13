@@ -3,24 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.min.js"></script>
     <link rel="stylesheet" href="style.css">
     <title>no-Click</title>
+    <link rel="icon" type= "image/png" href="images/logo.png">
 </head>
 <body>
-    <main>
-        <h1>no-Click Keyboard</h1>
-        <h2>Download Page</h2>
-        <h2>https://www.java.com/en/download/</h2>
-        <ul role="presentation"><h3>Use cases</h3></ul>
-            <li>Project Game Face</li>
-            <li>Mouse only, it will be faster than a mouse with clicks</li>
-        <h3>Test it out!</h3>
-        <h4>(This is going to be the example and test)</h4>
+    <main id = "main">
+        <div class = "section" id = "sides">
+            <div class = "subSection">
+            <h1>no-Click Keyboard</h1>
+            <img id = "icon" src="images/logo.png" alt="noClick Icon">
+            <h4>Designed for people that aren't using a physical keyboard!</h4>
+            <h4>Perfect for Project Game face and AR/VR!</h4>
+            </div>
+            <div class = "subSection">
+            <h2>Download</h2>
+            <h4>This software requires Java! It's easy to download!</h4>
+            <a target = "_blank" href = "https://www.java.com/en/download/"><div id="downloadButton">
+                <h3>Download Java</h3>
+            </div></a>
+            <a href = "https://www.youtube.com/"><div id="downloadButton">
+                <h3>Download noClick</h3>
+            </div></a>
+            </div>
+
+        </div>
         
-            <h3>Download</h3>
-        </div></a>
-        <h3>About no-Click Keyboard</h3>
-        <h4>This is a keyboard designed to make typing easier for anyone that has trouble using a mouse click.</h4>
+        <div class = "section">
+        <h3>Test it out!</h3>
+        <h4>There are many customization options for usability in the real application</h4>
+        <div id = "sketch-container">
+            <script src = "sketch.js"></script>
+        </div>
+        <h3>Known Bugs</h3>
+        <h4>UK and US keyboard differ by 2 keys</h4>
+        <h3>Dependencies</h3>
+        <h4>node-key-sender</h4>
+        </div>
+
+        <div class = "section" id = "sides">
+            <div class = "subSection">
+            <h1>Support the Developer</h1>
+            <h4>Any support will help me continue developing this and other applications alike!</h4>
+            <a target = "_blank" href = "https://www.patreon.com/c/adzzzy/membership"><div id="downloadButton">
+            <h3>Patron</h3>
+            </div></a>
+            </div>
+            <div class = "subSection">
+            <h1>Contact the Developer</h1>
+            <h4>Make sure to message me with any suggestions or bugs!</h4>
+            <a target = "_blank" href = "https://discord.gg/W4fzdRPS"><div id="downloadButton">
+            <h3>Discord</h3>
+            </div></a>
+            </div>
+            <div class = "subSection">
+            <h1>Contribute</h1>
+            <h4>Create Custom keyboards for different languages and keyboard layouts!</h4>
+            <a target = "_blank" href = "https://github.com/uadv/no-Click"><div id="downloadButton">
+                <h3>GitHub</h3>
+            </div></a>
+            <h4>!!! No contributions can be made at the moment, I am working to make it as easy as possible to contribute. Thank you!</h4>
+            </div>
+        </div>
     </main>
 </body>
 </html>
