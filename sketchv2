@@ -1,0 +1,337 @@
+let keyAmount = 32
+let angleChange = 360/keyAmount
+let theta = 0
+const r = 175
+let keyArray;
+let nearest;
+let newAngleArray;
+let positionArray;
+let sensitivityX;
+let sensitivityY;
+let sensitivity = 1.2;
+let expansionControlR = 200;
+let keyboardActive = true;
+let keyObjectArray;
+const alphabetShift = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+const alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+const ksAlphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+const special = [
+  '1','2','3','4','5','6','7','8','9','0',
+  '-','=','[',']',';','\'','\\',',','.','/','`'
+]
+const specialShift = [
+  '!','@','#','$','%','^','&','*','(',')',
+  '_','+','{','}',':','"','|','<','>','?','|','~'
+]
+
+const specialUK = [
+  '1','2','3','4','5','6','7','8','9','0',
+  '-','=','[',']',';','\'','#',',','.','/','\\','`'
+]
+
+const specialUKShift = [
+  '!','"','£','$','%','^','&','*','(',')',
+  '_','+','{','}',':','@','~','<','>','?','|','¬'
+]
+
+const ksSpecial = [
+  "1","2","3","4","5","6","7","8","9","0",
+  "minus","equals","open_bracket","X","semicolon",
+  "quote","X","comma","period","slash","X","block_quote"
+]
+
+const ksSpecialUK = [
+  "1","2","3","4","5","6","7","8","9","0",
+  "minus","equals","open_bracket","X","semicolon",
+  "quote","X","comma","period","slash","X","block_quote"
+]
+
+let amountArray = [32, 28]
+let mouseAngle;
+let KeyboardON = true
+let keyboardType = 0 // 0 = Normal , 1 = Special
+let keyboardLanguage = 0 // 0 = USA, 1 = UK
+let distanceSwitch = false // This is for when we switch keyboard we can hold until the mouse returns.
+let capson = false
+let transparentAmount = 70
+let keyboardColour =  '#b50c00'
+
+
+function setup() {
+  let canvas = createCanvas(400, 400);
+  canvas.parent('sketch-container')
+  angleMode(DEGREES)
+  textAlign(CENTER)
+  keyArray = []
+  newAngleArray = []
+  keyObjectArray = []
+  // Setting the Original Positions
+  for (let i = 0; i < keyAmount; i++){
+    let x = cos(theta) * r
+    let y = sin(theta) * r
+    theta = theta + angleChange
+    keyArray.push([x, y])
+  }
+  // Initializing all of the objects.
+  // These keys stay on the keyboard at all times (Perma Keys)
+  keyObjectArray.push (new pauseKeyboard('▶︎‖'))
+  keyObjectArray.push (new switchKeyboard('⇄'))
+  keyObjectArray.push(new capsKey('⇧'))
+  keyObjectArray.push(new normalKey('↵', 'enter'))
+  keyObjectArray.push(new normalKey('⌫', 'back_space'))
+  keyObjectArray.push(new normalKey('𓈙', 'space'))
+  for (let i = 0; i < keyAmount - 6; i++){ // minus from key amount when we add other keys
+    keyObjectArray.push(new normalKey(alphabet[i], ksAlphabet[i]))
+  }
+  //console.log(keyObjectArray)
+
+  // Here we are initializing the Settings.
+
+    const ballsize = document.getElementById('control-size')
+    const zoomSpeedInp = document.getElementById('zoom')
+    const keyboardColInp = document.getElementById('kCol')
+    const keyboardTransInp = document.getElementById('kTrans')
+    const kTypeInp = document.getElementById('kType')
+}
+
+const initialize = () => {
+  keyArray = []
+  newAngleArray = []
+  keyObjectArray.splice(6)
+  //console.log(keyObjectArray)
+  keyAmount = amountArray[keyboardType]
+  angleChange = 360/keyAmount
+  theta = 0
+  for (let i = 0; i < keyAmount; i++){
+    let x = cos(theta) * r
+    let y = sin(theta) * r
+    theta = theta + angleChange
+    keyArray.push([x, y])
+  }
+  if(keyboardType === 0){
+    for (let i = 0; i < keyAmount - 6; i++){ // minus from key amount when we add other keys
+      if(capson){
+        keyObjectArray.push(new normalKey(alphabetShift[i], ksAlphabet[i]))
+      } else {
+        keyObjectArray.push(new normalKey(alphabet[i], ksAlphabet[i]))
+      }
+    }
+  }
+  if(keyboardType === 1){
+    let keyshow;
+    let keytype;
+    let keyshowshift;
+    for (let i = 0; i < keyAmount - 6 ; i++){ // minus from key amount when we add other keys
+      if(keyboardLanguage === 0){
+        keyshow = special[i]
+        keytype = ksSpecial[i]
+        keyshowshift = specialShift[i]
+      } else {
+        keyshow = specialUK[i]
+        keytype = ksSpecialUK[i]
+        keyshowshift = specialUKShift[i]
+      }
+      if(capson){
+        keyObjectArray.push(new normalKey(keyshowshift, keytype))
+      } else {
+        keyObjectArray.push(new normalKey(keyshow, keytype))
+      }
+    }
+  }
+}
+
+function draw() {
+  //console.log(expansionControlR)
+  translate(width/2, height/2)
+  clear()
+  // Controls how much the keys expand.
+  if (dist(mouseX-width/2, mouseY-height/2, 0, 0) < expansionControlR/2){
+    sensitivityX = lerp(0, mouseX-width/2, sensitivity)
+    sensitivityY = lerp(0, mouseY-height/2, sensitivity)
+  }
+  //fill(255, 70)
+  //circle(0,0, 400)
+  let c = color(keyboardColour)
+  c.setAlpha(transparentAmount)
+  fill(c)
+  console.log(keyboardColour)
+  circle(0, 0, 325)
+  circle(0, 0, 275)
+  circle(0,0, expansionControlR)
+  //erase();
+  //circle(0, 0, 270); // Optionally Erase the Centre but I'm happy with the colour.
+  //noErase();
+  fill(255, 255)
+  
+  newAngleArray = []
+  
+  positionArray = []
+  
+  if (dist(mouseX-width/2, mouseY-height/2, 0, 0) < 137){
+    distanceSwitch = false
+  }
+  
+  // Saves the angle in the object.
+  for (let i = 0; i < keyAmount; i++){
+    let thisx = keyArray[i][0]
+    let thisy = keyArray[i][1]
+    let dx = thisx - sensitivityX
+    let dy = thisy - sensitivityY
+    let newAngle = atan2(dy, dx)
+    newAngleArray.push(newAngle)
+    }
+  // Saves the 4 Key positions in the object.
+  for (let i = 0; i < keyAmount; i++){
+    let newx = 137.5 * cos(newAngleArray[i])
+    let newy = 137.5 * sin(newAngleArray[i])
+    let longx = 163 * cos(newAngleArray[i])
+    let longy = 163 * sin(newAngleArray[i])
+    positionArray.push([newx, newy, longx, longy])
+    line(newx, newy, longx, longy)
+  }
+
+  // Setting the left and and the right angle walls.
+  for (let i = 0; i < keyAmount; i++){
+    if (i < keyAmount - 1) {keyObjectArray[i].changeAngle(newAngleArray[i], newAngleArray[i+1])}
+    else {keyObjectArray[i].changeAngle(newAngleArray[i], newAngleArray[0])}
+  }
+  // Use show letter function.
+  for (let i = 0; i < keyAmount; i++){
+    keyObjectArray[i].showLetter()
+    //keyObjectArray[i].checkSelected()
+  }
+  // The letters are just backwards lmao XD
+    mouseAngle = atan2(mouseX-width/2, mouseY-height/2) + 90
+    if (mouseAngle < 0){
+      mouseAngle += 360
+    }
+    mouseAngle = map(mouseAngle, 360, 0, -180, 180)
+  
+    for (let i = 0; i < keyAmount; i++){
+      keyObjectArray[i].checkSelected(mouseAngle)
+    }
+  //console.log(mouseAngle)
+  //text('no-click.co.uk', 0, 0)
+  //let newangle1 = atan2(mouseX-width/2, mouseY-height/2)
+}
+
+// Classes for the Keys!
+
+class normalKey {
+  constructor(letter, ksKey){ // This is the 
+    this.left;
+    this.right;
+    this.letter = letter
+    this.between = null
+    this.keysize = null
+    this.selected = false
+    this.slct_switch = false
+    this.ksKey = ksKey
+    this.press = 220
+  }
+  changeAngle(newleft, newright){ // This is the new Angle
+    this.left = newleft
+    this.right = newright
+  }
+  showLetter(){
+    // this letter will be inbetween the angle and at a distance
+    this.between = Math.abs(this.left - this.right)
+    if (this.between < 180){
+      this.keysize = this.between
+      this.between = this.right - (this.between/2)
+    }else {
+      this.between = 360 - this.between
+      this.keysize = this.between
+      this.between = this.left + this.between/2
+    }
+    
+    let x = 180 * cos(this.between)
+    let y = 180 * sin(this.between)
+    fill(this.press)
+    circle(x, y, 25)
+    fill(0)
+    text(this.letter, x, y)
+    //text(this.between, x, y)
+    //line(0, 0, x, y)
+  }
+  checkSelected(){
+    // Handling the Edge Case:
+    let mouseXtemp = mouseX - width/2
+    let mouseYtemp = mouseY - width/2
+    let mouseAngletemp = mouseAngle
+    let thisrighttemp = this.right
+    
+    if (this.left - this.right >= 180){
+      thisrighttemp = 180 - (-180 - this.right)
+      // this is adding the right and left, we need to add the right minus from -180
+      if (mouseAngletemp < 0){
+        mouseAngletemp = 180 - (-180 - mouseAngletemp)
+      }
+    }
+    // if mouse angle is between my angles then do this:
+    if(dist(mouseXtemp, mouseYtemp, 0, 0) >= 275/2){
+        if(mouseAngletemp >= this.left && mouseAngletemp <= thisrighttemp){
+          this.selected = true
+        } else {
+          this.selected = false
+          this.slct_switch = false
+        }
+        if(this.selected === true && this.slct_switch === false){
+          // Do the action
+          this.press = 150
+          this.keyAction()
+          this.slct_switch = true
+        }
+    } else {
+      this.slct_switch = false
+      this.press = 220
+    }
+
+  }
+  keyAction(){
+    if (KeyboardON && distanceSwitch === false) {
+      if(capson){
+        //keySender.sendCombination(['shift', this.ksKey]);
+      } else {
+        //keySender.sendKey(this.ksKey)
+      }
+    }
+  }
+}
+
+// Class Varients for the Main Keys!!!
+
+class pauseKeyboard extends normalKey {
+  keyAction(){
+    if (distanceSwitch === false){
+      KeyboardON = !KeyboardON
+      console.log(KeyboardON)
+    }
+  }
+}
+
+class switchKeyboard extends normalKey {
+  keyAction(){
+    console.log(keyboardType)
+    if (KeyboardON) {
+        if (keyboardType === 0){
+          keyboardType = 1
+        } else {
+          keyboardType = 0
+        }
+      distanceSwitch = true
+      initialize()
+    }
+  }
+}
+
+class capsKey extends normalKey {
+  keyAction(){
+      capson = !capson
+      initialize()
+    }
+}
+
+
+
+
